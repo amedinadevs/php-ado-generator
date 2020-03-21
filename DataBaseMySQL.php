@@ -45,7 +45,7 @@ Class DatabaseMySQL
 		return $result;
 	}
 
-	public static function ReadObject($result,$class)
+	public static function ReadObject($result, $class="stdClass")
 	{
 		try
 		{
