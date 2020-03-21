@@ -5,10 +5,10 @@ spl_autoload_register(function ($class_name) {
  });
 
  //** CONFIGURARION TABLE MAPPER *************************/
-$DB_NAME = "name_bd";
-$DB_TABLE_NAME = "Name_table";
+$DB_NAME = "foronum";
+$DB_TABLE_NAME = "coleccionistas";
 $DB_PK = "id";
-$CLASS_NAME = "ADOName";
+$CLASS_NAME = "ADOColeccionista";
 
  ///** CONFIGURATION DB ***********************************/
 $db  = DatabaseMySQL::Connect();

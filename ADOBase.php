@@ -47,6 +47,7 @@ class ADOBase {
 		{
 			for ($i=0, $c=sizeof($search); $i<$c; $i++)
 			{
+                if($i!=0) $str .= " AND ";
                 $str .= " ".$search[$i][0]." ".$search[$i][1]." ".$this->BindParam($search[$i][2],$connection);				
 			}
         } 

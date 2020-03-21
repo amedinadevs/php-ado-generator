@@ -4,7 +4,7 @@ Class DatabaseMySQL
 {
 	function __construct()
 	{
-		$databaseName = 'name_bd';
+		$databaseName = 'foronum';
 		$serverName = 'localhost';
 		$databaseUser = 'root';
         $databasePassword = '';
