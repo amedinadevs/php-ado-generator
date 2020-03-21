@@ -63,6 +63,7 @@ class ADOBase {
             case "integer": 
             case "double":
             case "boolean" : return $param; break;
+            default : return "null"; // for PKs in inserts
         }
 
     }
