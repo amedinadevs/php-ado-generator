@@ -45,11 +45,35 @@ Class DatabaseMySQL
 		return $result;
 	}
 
+	public static function ReadAll($result)
+	{
+		try
+		{
+			return $result->fetch_all();
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+	}
+
 	public static function ReadObject($result, $class="stdClass")
 	{
 		try
 		{
 			return $result->fetch_object($class);
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+	}
+
+	public static function ReadArray($result)
+	{
+		try
+		{
+			return $result->fetch_array();
 		}
 		catch (Exception $e)
 		{
