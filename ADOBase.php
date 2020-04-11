@@ -155,6 +155,14 @@ class ADOBase {
 		return $this->id;
     }
 
+    function SaveNew()
+	{
+        foreach($this->pks_get() as $pk){
+            $this-> $pk = null;
+        }
+		return $this->Save();
+	}
+
 }
 
 ?>

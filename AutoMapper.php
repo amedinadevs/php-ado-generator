@@ -6,9 +6,9 @@ spl_autoload_register(function ($class_name) {
 
  //** CONFIGURARION TABLE MAPPER *************************/
 $DB_NAME = "foronum";
-$DB_TABLE_NAME = "coleccionistas";
+$DB_TABLE_NAME = "paises";
 $DB_PK = "id";
-$CLASS_NAME = "ADOColeccionista";
+$CLASS_NAME = "ADOPais";
 
  ///** CONFIGURATION DB ***********************************/
 $db  = DatabaseMySQL::Connect();
