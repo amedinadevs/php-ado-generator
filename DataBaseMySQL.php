@@ -30,6 +30,11 @@ Class DatabaseMySQL
 			$database = new DatabaseMySQL();
 		}
 		return $database->connection;
+	}
+	
+	public static function Disconnect($connection)
+	{
+		return $connection->close();
     }
 
 	public static function Query($query, $connection)
