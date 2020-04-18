@@ -85,7 +85,7 @@ class ADOBase {
         $connection = DatabaseMySQL::Connect();
         $sqlLimit = ($limit != '' ? "LIMIT $limit" : '');
         $sqlSort = ($sortBy != '' ? "ORDER BY $sortBy ".($ascending ? "ASC" : "DESC") : "");
-        $query = "SELECT ".$this->fields()." FROM ".$this->tableName()." WHERE 1 = 1 AND ".$this->mountSearch($search, $connection)." $sqlSort $sqlLimit";
+        $query = "SELECT ".$this->fields()." FROM ".$this->tableName()." WHERE 1 = 1 ".(empty($search) ? "" : "AND ".$this->mountSearch($search, $connection))." $sqlSort $sqlLimit";
 
         $itemList = Array();
         if ($result = DatabaseMySQL::Query($query,$connection)) {

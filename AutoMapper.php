@@ -6,9 +6,9 @@ spl_autoload_register(function ($class_name) {
 
  //** CONFIGURARION TABLE MAPPER *************************/
 $DB_NAME = "foronum";
-$DB_TABLE_NAME = "paises";
+$DB_TABLE_NAME = "t_subcategoria";
 $DB_PK = "id";
-$CLASS_NAME = "ADOPais";
+$CLASS_NAME = "ADOTiendaSubCategoria";
 
  ///** CONFIGURATION DB ***********************************/
 $db  = DatabaseMySQL::Connect();
