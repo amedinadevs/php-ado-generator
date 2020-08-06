@@ -21,23 +21,29 @@ class ADOBase {
 
     private function pks($value){  
         $str_pk = "";
-        if(count($this->pks) == 1){ // para cuando solo viene un id, ej. id=1 -> viene 1
+
+        if(is_int($value)){ // para cuando solo viene un id, ej. id=1 -> viene 1
             $str_pk = $this->pks[0]." = $value ";
         }
-        else{
-            $str_pk = $this->pks_assoc($value); // se deverá recibir un associativo con nombre idem que pk
+        else if(is_string($value)){ // para cuando solo viene un id, ej. id='1' -> viene '1'
+            $str_pk = $this->pks[0]." = '$value' ";
+        }
+        else if(is_array($value)){
+            $str_pk = $this->pks_assoc($value); //array(27,15320)
         }
         return $str_pk;
     }
 
-    // recibe array asociativo
     private function pks_assoc($value){  
-        $str_pk = "";
-            foreach($this->pks as $pk){
-                if($str_pk !== "") {$str_pk.= " AND ";}
-                $str_pk .= $pk." = ".$value[$pk]." "; // se deverá recibir un associativo con nombre idem que pk
-            }
         
+        $str_pk = "";
+        $count = 0;
+        foreach($this->pks_get() as $pk){
+            if($str_pk != "") {$str_pk.= " AND ";}
+            $str_pk .= $pk." = '".$value[$count]."' ";
+            $count++;
+        }
+
         return $str_pk;
     }
 
@@ -63,17 +69,17 @@ class ADOBase {
             case "integer": 
             case "double":
             case "boolean" : return $param; break;
-            default : return "null"; // for PKs in inserts
+            default : return "null";
         }
 
     }
 
 
-    //** $id si es una pk compuesta recibirá array */
+    //** $id si es una pk compuesta recibira array */
+    //** ej. ->Get(array(27,15320) */
     public function Get($id){
         $connection = DatabaseMySQL::Connect();
         $query = "SELECT ".$this->fields()." FROM ".$this->tableName()." WHERE 1 = 1 AND ".$this->pks($id);
-
         if ($result = DatabaseMySQL::Query($query,$connection)) {
             return DatabaseMySQL::ReadObject($result, $this->className());
         }
@@ -98,8 +104,15 @@ class ADOBase {
     }
 
 	public function Delete(){
+        $arrayPks = Array();
+        $count = 0;
+        foreach($this->pks_get() as $pk){
+            $arrayPks[$count] = $this-> $pk;
+            $count++;
+        }
+
 		$connection = DatabaseMySQL::Connect();
-        $query = "DELETE FROM ".$this->tableName()." WHERE ".$this->pks($this->id);
+        $query = "DELETE FROM ".$this->tableName()." WHERE ".$this->pks($arrayPks);
         $result = DatabaseMySQL::NonQuery($query, $connection);
 
 		return $result;
@@ -110,9 +123,20 @@ class ADOBase {
         $rows = 0;
         $query = "";
         
-		if ($this->id != ''){
-			$obj = $this->Get($this->id);
-		}
+        $arrayPks = Array();
+        $count = 0;
+        foreach($this->pks_get() as $pk){
+            $arrayPks[$count] = $this-> $pk;
+            $count++;
+        }
+
+        if(count($arrayPks) == 1){
+            $obj = $this->Get($arrayPks[0]);
+        }
+        elseif(count($arrayPks) > 1){
+            $obj = $this->Get($arrayPks);
+        }
+            		
 		if ($obj)
 		{
 
@@ -122,14 +146,7 @@ class ADOBase {
                 if($querySet != "") $querySet .= ", ";
                 $querySet .= "$field = ".$this->BindParam($this->$field,$connection);
             }
-
-            $arrayPks = Array();
-            foreach($this->pks_get() as $pk){
-                $arrayPks[$pk] = $this-> $pk;
-            }
-
-            $queryWhere = " WHERE ".$this->pks_assoc($arrayPks);
-
+            $queryWhere = " WHERE ".$this->pks($arrayPks); 
             $query = $query.$querySet.$queryWhere;
 		}
 		else
@@ -145,7 +162,7 @@ class ADOBase {
             }
             $query .= $queryInto.")";
         }
-        
+
 		$insertId = DatabaseMySQL::InsertOrUpdate($query, $connection);
 		if ($this->id == "")
 		{
