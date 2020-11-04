@@ -6,22 +6,23 @@ spl_autoload_register(function ($class_name) {
 
  //** CONFIGURARION TABLE MAPPER *************************/
 $DB_NAME = "foronum";
-$DB_TABLE_NAME = "page_words";
-$DB_PK = "page\", \"language\", \"code"; // COMPUESTAS -> "page\", \"language\", \"code";
-$CLASS_NAME = "ADOWords";
+$DB_TABLE_NAME = "coleccionistas";
+$DB_PK = "id"; // COMPUESTAS -> "page\", \"language\", \"code";
+//$DB_PK = "id";
+$CLASS_NAME = "ADOColeccionistas";
 
  ///** CONFIGURATION DB ***********************************/
 $db  = DatabaseMySQL::Connect();
 
 // Query to get columns from table
-$query = $db->Query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$DB_NAME' AND TABLE_NAME = '$DB_TABLE_NAME'");
+$query = $db->Query("SELECT COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, COLUMN_KEY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$DB_NAME' AND TABLE_NAME = '$DB_TABLE_NAME'");
 
 while($row = $query->fetch_assoc()){
     $result[] = $row;
 }
 
 // Array of all column names
-$columnArr = array_column($result, 'COLUMN_NAME');
+$array_names = array_column($result, 'COLUMN_NAME');
 
 //** PRINT CLASS ******************************************/
 
@@ -31,26 +32,30 @@ echo "<pre>";
     echo "\n\nclass $CLASS_NAME extends ADOBase{\n\n";
 
     echo "// atributos\n";
-    foreach ($columnArr as $key => $value) {
-        echo "public $".$value.";\n";
+    foreach ($result as $key => $value) {
+        echo "public $".$value['COLUMN_NAME'].";   // ".$value['DATA_TYPE']."\n";
     }
 
     echo "\n// table config\n";
     echo "protected \$class_name = \"$CLASS_NAME\";\n";
     echo "protected \$table_name = \"$DB_TABLE_NAME\";\n";
-    echo "protected \$fields = array(\"".implode('","', $columnArr)."\");\n";
+    echo "protected \$fields = array(\"".implode('","', $array_names)."\");\n";
     echo "protected \$pks = array(\"$DB_PK\");\n";
 
     echo "\n\nfunction __construct(";
-    foreach ($columnArr as $key => $value) {
+    foreach ($result as $key => $value) {
         if($key != 0) echo ",";
-        echo "$".$value."=''";
+        echo "$".$value['COLUMN_NAME']."=";
+
+        if($value['COLUMN_KEY'] == "PRI") {echo "NULL";}
+        else if($value['IS_NULLABLE'] == "YES") {echo "NULL";}
+        else {echo $value['COLUMN_DEFAULT'];}
     }
     echo ")\n";
 
     echo "{\n";
-        foreach ($columnArr as $key => $value) {
-            echo "if (!\$this->$value) {\$this->$value = \$$value;}\n";
+        foreach ($result as $key => $value) {
+            echo "if (\$this->".$value['COLUMN_NAME']." == NULL) {\$this->".$value['COLUMN_NAME']." = \$".$value['COLUMN_NAME'].";}\n";
         }
     echo "}\n\n";
 
