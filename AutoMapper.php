@@ -6,10 +6,10 @@ spl_autoload_register(function ($class_name) {
 
  //** CONFIGURARION TABLE MAPPER *************************/
 $DB_NAME = "foronum";
-$DB_TABLE_NAME = "coleccionistas";
-$DB_PK = "id"; // COMPUESTAS -> "page\", \"language\", \"code";
+$DB_TABLE_NAME = "intercambio_monedas";
+$DB_PK = "intercambio_id\", \"intercambio_col_id, \"clave"; // COMPUESTAS -> "page\", \"language\", \"code";
 //$DB_PK = "id";
-$CLASS_NAME = "ADOColeccionistas";
+$CLASS_NAME = "ADOIntercambioMonedas";
 
  ///** CONFIGURATION DB ***********************************/
 $db  = DatabaseMySQL::Connect();
@@ -49,13 +49,22 @@ echo "<pre>";
 
         if($value['COLUMN_KEY'] == "PRI") {echo "NULL";}
         else if($value['IS_NULLABLE'] == "YES") {echo "NULL";}
-        else {echo $value['COLUMN_DEFAULT'];}
+        else 
+        { 
+            if(is_numeric($value['COLUMN_DEFAULT'])) 
+            {
+                echo $value['COLUMN_DEFAULT'];
+            }else{
+                if($value['COLUMN_DEFAULT'] == NULL) echo "'".$value['COLUMN_DEFAULT']."'" ;
+                else echo $value['COLUMN_DEFAULT'] ;
+            }
+        } 
     }
     echo ")\n";
 
     echo "{\n";
         foreach ($result as $key => $value) {
-            echo "if (\$this->".$value['COLUMN_NAME']." == NULL) {\$this->".$value['COLUMN_NAME']." = \$".$value['COLUMN_NAME'].";}\n";
+            echo "  if (\$this->".$value['COLUMN_NAME']." == NULL) {\$this->".$value['COLUMN_NAME']." = \$".$value['COLUMN_NAME'].";}\n";
         }
     echo "}\n\n";
 
